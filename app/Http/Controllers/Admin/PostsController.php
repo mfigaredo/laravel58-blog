@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Category;
+use App\Http\Requests\StorePostRequest;
 use App\Post;
 use App\Tag;
 use Carbon\Carbon;
@@ -44,7 +45,6 @@ class PostsController extends Controller
     public function storeBK(Request $request)
     {
 //        dd(request('published_at'));
-//        return $request->all();
         $this->validate($request, [
             'title' => 'required|min:5',
             'body' => 'required|min:10',
@@ -60,12 +60,14 @@ class PostsController extends Controller
         $post->body = request('body');
         $post->excerpt = request('excerpt');
 
-        try {
+        /*try {
             $post->published_at = request('published_at') !== null ? Carbon::createFromFormat('!d/m/Y', request('published_at')) : null;
 
         } catch(Exception $exception) {
             $post->published_at = null;
-        }
+        }*/
+        dd($request);
+        $post->published_at = request('published_at');
         $post->category_id = request('category');
         $post->save();
 
@@ -73,30 +75,19 @@ class PostsController extends Controller
         return back()->with('flash','Tu publicación ha sido creada.');
      }
 
-    public function update(Post $post, Request $request)
+    public function update(Post $post, StorePostRequest $request)
     {
-        $this->validate($request, [
-            'title' => 'required|min:5',
-            'body' => 'required|min:10',
-            'category' => 'required',
-            'excerpt' => 'required|min:5',
-            'tags' => 'required',
-        ]);
-        $post->title = request('title');
-        $post->body = request('body');
-        $post->excerpt = request('excerpt');
+        $post->update($request->all());
+        $post->syncTags(request('tags'));
+        return redirect()->route('admin.posts.edit', $post)->with('flash','La publicación ha sido guardada.');
+    }
 
-        try {
-            $post->published_at = request('published_at') !== null ? Carbon::createFromFormat('!d/m/Y', request('published_at')) : null;
+    public function destroy(Post $post)
+    {
 
-        } catch(Exception $exception) {
-            $post->published_at = null;
-        }
-        $post->category_id = request('category');
-        $post->save();
-
-        $post->tags()->sync(request('tags'));
-//        return back()->with('flash','Tu publicación ha sido guardada.');
-        return redirect()->route('admin.posts.edit', $post)->with('flash','Tu publicación ha sido guardada..');
+        $post->delete();
+        return redirect()
+            ->route('admin.posts.index')
+            ->with('flash', 'La publicación ha sido eliminada.');
     }
 }

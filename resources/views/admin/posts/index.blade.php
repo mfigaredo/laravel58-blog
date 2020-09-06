@@ -41,15 +41,21 @@
                             <td>{{ $post->title }}</td>
                             <td>{{ $post->excerpt }}</td>
                             <td>
-                                <a href="{{ route('blog.show', $post) }}" class="btn btn-default btn-xs" target="_post">
+                                <a href="{{ route('posts.show', $post) }}" class="btn btn-default btn-xs mx-2" target="_post">
                                     <i class="fa fa-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.posts.edit', $post) }}" class="btn btn-info btn-xs">
+                                <a href="{{ route('admin.posts.edit', $post) }}" class="btn btn-info btn-xs mx-2">
                                     <i class="fa fa-pencil-alt"></i>
                                 </a>
-                                <a href="#" class="btn btn-danger btn-xs">
-                                    <i class="fa fa-trash"></i>
-                                </a>
+
+                                <form action="{{ route('admin.posts.destroy', $post) }}" method="POST" style="display: inline">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-danger btn-xs mx-2" onclick="return confirm('¿Estás seguro de querer eliminar esta publicación?')">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+
+
                             </td>
                         </tr>
                     @endforeach

@@ -1,6 +1,6 @@
 .container{
-	padding-right: 15px;
-  	padding-left: 15px;
+	padding-right: 0px !important;
+  	padding-left: 0px !important;
   	margin-right: auto;
   	margin-left: auto;
 }
@@ -24,7 +24,7 @@
     width: 930px;
   }
   .no-desktop{
-  	display: none !important; 
+  	display: none !important;
   }
 }
 .container-fluid{

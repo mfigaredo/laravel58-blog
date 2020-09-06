@@ -17,6 +17,29 @@
     </div><!-- /.row -->
 @endsection
 @section('content')
+    @if($post->photos->count() > 0 )
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-body">
+                    <div class="row">
+                        @foreach($post->photos as $photo)
+                            <div class="col-md-2">
+                                <form class="form-inline" action="{{ route('admin.photos.destroy', $photo) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-xs btn-danger px-2" style="position: absolute; top: 0; left:10;"><i class="fa fa-times"></i></button>
+                                    <img class="w-100" style="" src="{{ Storage::url($photo->url) }}" alt="">
+                                </form>
+                            </div>
+                        @endforeach
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
     <form action="{{ route('admin.posts.update', $post) }}" method="POST">
         @csrf
         @method('PUT')
@@ -46,10 +69,20 @@
                             <textarea name="body" id="editor" class="form-control @error('body') is-invalid @enderror" placeholder="ingresa el contenido completo de la publicación" rows="12">{{ old('body', $post->body) }}</textarea>
                             @error('body')
                             <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
+                                <strong>{{ $message }}</strong>
+                            </span>
                             @enderror
                         </div>
+                        <div class="form-group">
+                            <label for="editor" class="@error('iframe') text-red @enderror">Contenido embebido (iframe de audio o video)</label>
+                            <textarea name="iframe" id="iframe" class="form-control @error('iframe') is-invalid @enderror" placeholder="ingresa contenido embebido de audio o video" rows="2">{{ old('iframe', $post->iframe) }}</textarea>
+                            @error('iframe')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -69,19 +102,19 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="category">Categoría:</label>
-                            <select name="category" id="category" class="form-control @error('category') is-invalid @enderror">
+                            <label for="category_id">Categoría:</label>
+                            <select name="category_id" id="category_id" class="form-control select2bs4 @error('category_id') is-invalid @enderror">
                                 <option value="">Selecciona una categoría</option>
                                 @foreach($categories as $category)
                                     {{--                                <option value="{{ $category->id }}" @if(old('category') == $category->id ) selected @endif>{{ $category->name }}</option>--}}
-                                    <option value="{{ $category->id }}" {{ $category->id == old('category', $post->category_id) ? 'selected' : '' }}>{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ $category->id == old('category_id', $post->category_id) ? 'selected' : '' }}>{{ $category->name }}</option>
                                 @endforeach
 
                             </select>
-                            @error('category')
+                            @error('category_id')
                             <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
+                                <strong>{{ $message }}</strong>
+                            </span>
                             @enderror
                         </div>
                         <div class="form-group">
@@ -103,10 +136,14 @@
                             <textarea name="excerpt" id="excerpt" class="form-control @error('excerpt') is-invalid @enderror" placeholder="ingresa aquí el extracto de la publicación">{{ old('excerpt', $post->excerpt) }}</textarea>
                             @error('excerpt')
                             <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
+                                <strong>{{ $message }}</strong>
+                            </span>
                             @enderror
                         </div>
+                        <div class="form-group">
+                            <div class="dropzone"></div>
+                        </div>
+
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary  btn-block">Guardar Publicación</button>
                         </div>
@@ -115,9 +152,11 @@
             </div>
         </div>
     </form>
+
 @endsection
 
 @push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.0.1/dropzone.css" integrity="sha512-UrCkMTUH0evgGYJJ1Gb5XGuBXDrsSNoyN6Y6OecnEldtTg0TnqZACVJXyEY1wmvf6H8sKET/Yb85cG1xOjSnsw==" crossorigin="anonymous" />
     {{--    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">--}}
     <!-- daterange picker -->
     <link rel="stylesheet" href="/adminlte/plugins/daterangepicker/daterangepicker.css">
@@ -131,6 +170,7 @@
 @endpush
 
 @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.0.1/min/dropzone.min.js" integrity="sha512-/dI6bSNIeJtFs3HvQbyWFDDqwxBNyTi+VDUIcP3bghK8bsaRjVNVIbrgd5mSrf1oAKP1qe9UIX+hIYzqpD+GTg==" crossorigin="anonymous"></script>
     <!-- Moment JS -->
     <script src="/adminlte/plugins/moment/moment.min.js"></script>
     <!-- date-range-picker -->
@@ -157,7 +197,7 @@
                 fontName: 'Verdana',
                 placeholder: '<em>edita contenido de la publicación aquí</em>',
                 tabsize: 2,
-                height: "200",
+                height: "360",
                 lang: 'es-ES',
                 border: '1px red solid',
                 callbacks: {
@@ -175,9 +215,30 @@
 
             //Initialize Select2 Elements
             $('.select2bs4').select2({
-                theme: 'bootstrap4'
-            })
+                theme: 'bootstrap4',
+                tags: true,
+            });
+
+
 
         });
+        Dropzone.autoDiscover = false;
+        var myDropzone = new Dropzone('.dropzone', {
+            url: '/admin/posts/{{ $post->url }}/photos',
+            acceptedFiles: 'image/*',
+            maxFilesize: 2,
+            paramName: 'photo',
+            dictDefaultMessage: 'Arrastra aquí tus archivos',
+            headers: {
+                'X-CSRF-TOKEN' : '{{ csrf_token() }}'
+            }
+        });
+
+        myDropzone.on('error', function(file, res){
+
+            var msg = res.errors.photo[0];
+            $('.dropzone .dz-error-message:last > span').text(msg);
+        });
+
     </script>
 @endpush
