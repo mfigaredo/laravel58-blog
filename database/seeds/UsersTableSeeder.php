@@ -3,6 +3,8 @@
 use App\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UsersTableSeeder extends Seeder
 {
@@ -13,13 +15,35 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        Role::truncate();
+        Permission::truncate();
         User::truncate();
-        $user = new User;
-        $user->name = 'Miguel';
-        $user->email = 'mfigaredo@gmail.com';
-        $user->email_verified_at = date('Y-m-d H:i:s');
-        $user->password = bcrypt('test123');
-        $user->remember_token = Str::random(32);
-        $user->save();
+
+        $adminRole = Role::create(['name' => 'Admin']);
+        $writerRole = Role::create(['name' => 'Writer']);
+
+        $viewPostsPermission = Permission::create(['name' => 'View posts']);
+        $createPostsPermission = Permission::create(['name' => 'Create posts']);
+        $updatePostsPermission = Permission::create(['name' => 'Update posts']);
+        $deletePostsPermission = Permission::create(['name' => 'Delete posts']);
+
+        $admin = new User;
+        $admin->name = 'Miguel';
+        $admin->email = 'mfigaredo@gmail.com';
+        $admin->email_verified_at = date('Y-m-d H:i:s');
+        $admin->password = ('test123');
+        $admin->remember_token = Str::random(32);
+        $admin->save();
+        $admin->assignRole($adminRole);
+
+        $writer = new User;
+        $writer->name = 'Star';
+        $writer->email = 'star@somegmail.com';
+        $writer->email_verified_at = date('Y-m-d H:i:s');
+        $writer->password = ('test123');
+        $writer->remember_token = Str::random(32);
+        $writer->save();
+        $writer->assignRole($writerRole);
+
     }
 }

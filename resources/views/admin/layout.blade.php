@@ -35,6 +35,13 @@
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="#" class="nav-link">Contact</a>
             </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+{{--                    <button type="submit" class="btn nav-link">Logout</button>--}}
+                    <a onclick="$(this).closest('form').submit()" class="nav-link">Salir</a>
+                </form>
+            </li>
         </ul>
 
         <!-- SEARCH FORM -->
@@ -156,12 +163,19 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <!-- Sidebar user panel (optional) -->
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center justify-content-between w-100">
                 <div class="image">
                     <img src="/adminlte/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
                 </div>
-                <div class="info">
-                    <a href="#" class="d-block">{{ auth()->user()->name }}</a>
+                <div class="d-flex justify-content-between w-100 align-items-center">
+                    <div class="pl-2">
+                        <a href="#" class="">{{ auth()->user()->name }}</a>
+                    </div>
+                    @if(auth()->user()->roles->count())
+                    <div class="badge badge-secondary">
+                        {{ auth()->user()->roles->first()->name }}
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -232,8 +246,10 @@
 <script src="{{ asset('/adminlte/js/adminlte.js') }}"></script>
 
 <!-- Scripts Section from View -->
+@unless( request()->is('admin/posts/*'))
+    @include('admin.posts.create')
+@endunless
 @stack('scripts')
 
-@include('admin.posts.create')
 </body>
 </html>

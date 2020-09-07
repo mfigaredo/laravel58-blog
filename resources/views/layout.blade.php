@@ -10,6 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @stack('styles')
+    <link rel="stylesheet" href="{{ asset('/adminlte/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/normalize.css') }}">
     <link rel="stylesheet" href="{{ asset('css/framework.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
@@ -23,15 +24,7 @@
 <header class="space-inter">
     <div class="container container-flex space-between">
         <figure class="logo"><img src="{{ asset('img/logo.png') }}" alt=""></figure>
-        <nav class="custom-wrapper" id="menu">
-            <div class="pure-menu"></div>
-            <ul class="container-flex list-unstyled">
-                <li><a href="{{ url('/') }}" class="text-uppercase">Home</a></li>
-                <li><a href="about.html" class="text-uppercase">About</a></li>
-                <li><a href="archive.html" class="text-uppercase">Archive</a></li>
-                <li><a href="contact.html" class="text-uppercase">Contact</a></li>
-            </ul>
-        </nav>
+        @include('partials.nav')
     </div>
 </header>
 

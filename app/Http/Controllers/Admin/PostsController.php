@@ -16,34 +16,49 @@ class PostsController extends Controller
 {
     public function index()
     {
-        $posts = Post::all();
+//        $posts = Post::all();
+//        $posts = Post::where('user_id', auth()->id() )->get();
+//        $posts = auth()->user()->hasRole('Admin') ? Post::all() : auth()->user()->posts;
+        $posts = Post::allowed()->get();
         return view('admin.posts.index', compact('posts'));
     }
 
     public function create()
     {
-        $categories = Category::orderBy('name')->get();
-        $tags = Tag::orderBy('name')->get();
-
-        return view('admin.posts.create', compact('categories','tags'));
+        return view('admin.posts.create', [
+            'tags' => Tag::orderBy('name')->get(),
+            'categories' => Category::orderBy('name')->get(),
+        ]);
     }
 
     public function store(Request $request)
     {
-        $this->validate($request, ['title' => 'required']);
-        $post = Post::create(['title' => request('title')]);
+        $this->authorize('create', new Post);
+        $this->validate($request, ['title' => 'required|min:5']);
+//        $post = Post::create([
+//            'title' => request('title'),
+//            'user_id'=> auth()->id(),
+//        ]);
+//        $post = Post::create( array_merge( request()->all() , ['user_id' => auth()->id()]) );  // $fillable is set!
+        $post = Post::create( request()->all() );  // $fillable is set!
+
         return redirect()->route('admin.posts.edit', $post);
     }
 
     public function edit(Post $post)
     {
-        $categories = Category::orderBy('name')->get();
-        $tags = Tag::orderBy('name')->get();
-        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
+        $this->authorize('update', $post);
+
+        return view('admin.posts.edit', [
+            'post' => $post,
+            'tags' => Tag::orderBy('name')->get(),
+            'categories' => Category::orderBy('name')->get(),
+        ]);
     }
 
     public function storeBK(Request $request)
     {
+
 //        dd(request('published_at'));
         $this->validate($request, [
             'title' => 'required|min:5',
@@ -77,6 +92,7 @@ class PostsController extends Controller
 
     public function update(Post $post, StorePostRequest $request)
     {
+        $this->authorize('update', $post);
         $post->update($request->all());
         $post->syncTags(request('tags'));
         return redirect()->route('admin.posts.edit', $post)->with('flash','La publicación ha sido guardada.');
@@ -84,7 +100,7 @@ class PostsController extends Controller
 
     public function destroy(Post $post)
     {
-
+        $this->authorize('delete', $post);
         $post->delete();
         return redirect()
             ->route('admin.posts.index')
