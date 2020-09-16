@@ -17,6 +17,10 @@ Route::get('laravel', function() {
     return view('welcome');
 });
 
+//Route::get('email', function() {
+//    return new App\Mail\LoginCredentials(App\User::first(), 'asd123');
+//});
+
 Route::get('/', 'PagesController@home')->name('pages.home');
 Route::get('nosotros', 'PagesController@about')->name('pages.about');
 Route::get('archivo', 'PagesController@archive')->name('pages.archive');
@@ -49,6 +53,7 @@ Route::group([
 
     Route::resource('posts', 'PostsController', ['except' => 'show', 'as' => 'admin']);
     Route::resource('users', 'UsersController', ['as' => 'admin']);
+    Route::resource('roles', 'RolesController', ['as' => 'admin']);
 
 //    Route::get('posts', 'PostsController@index')->name('admin.posts.index');
 //    Route::get('posts/create', 'PostsController@create')->name('admin.posts.create');
@@ -60,8 +65,13 @@ Route::group([
     Route::post('posts/{post}/photos', 'PhotosController@store')->name('admin.posts.photos.store');
     Route::delete('photos/{photo}', 'PhotosController@destroy')->name('admin.photos.destroy');
 
-    Route::put('users/{user}/roles', 'UsersRolesController@update')->name('admin.users.roles.update');
-    Route::put('users/{user}/permissions', 'UsersPermissionsController@update')->name('admin.users.permissions.update');
+    Route::middleware('role:Admin')
+        ->put('users/{user}/roles', 'UsersRolesController@update')
+        ->name('admin.users.roles.update');
+
+    Route::middleware('role:Admin')
+        ->put('users/{user}/permissions', 'UsersPermissionsController@update')
+        ->name('admin.users.permissions.update');
 });
 
 Route::get('test', function() {

@@ -21,7 +21,7 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <h3 class="card-title">Todos los usuarios</h3>
-            <button class="btn btn-primary float-right" data-toggle="modal" data-target="#newPostModal"><i class="fa fa-plus"></i> Crear Usuario</button>
+            <a href="{{ route('admin.users.create') }}" class="btn btn-primary float-right"><i class="fa fa-plus"></i> Crear Usuario</a>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -52,19 +52,19 @@
                             <a href="{{ route('admin.users.show', $user) }}" class="btn btn-default btn-xs mr-2 border-dark">
                                 <i class="fa fa-eye"></i>
                             </a>
-                            @can('update', $user)
+{{--                            @can('update', $user)--}}
                                 <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-info btn-xs mr-2">
                                     <i class="fa fa-pencil-alt"></i>
                                 </a>
-                            @endcan
-                            @can('delete', $user)
+{{--                            @endcan--}}
+{{--                            @can('delete', $user)--}}
                                 <form action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display: inline">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-danger btn-xs mr-2" onclick="return confirm('¿Estás seguro de querer eliminar este usuario?')">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </form>
-                            @endcan
+{{--                            @endcan--}}
 
 
                         </td>

@@ -10,14 +10,7 @@
                </div>
                 <div class="card-body">
 
-                    @if($errors->any())
-                        <ul class="list-group mb-3">
-
-                        @foreach($errors->all() as $error)
-                            <li class="list-group-item list-group-item-danger">{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        @endif
+                    @include('partials.error-messages')
                     <form action="{{ route('admin.users.update', $user) }}" method="POST">
                         @csrf @method('PUT')
 {{--                        <input type="hidden" name="user_id" value="{{ $user->id }}">--}}
@@ -51,21 +44,21 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.users.roles.update', $user) }}" method="POST">
-                        @csrf @method('PUT')
-                        @foreach($roles as $role)
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" class="mr-2" name="roles[]" value="{{ $role->id }}" {{ $user->roles->contains($role->id) ? 'checked' : ''  }}>
-                                    {{ $role->name }} <br>
-                                    <small class="text-muted">
-                                        {{ $role->permissions->pluck('name')->implode(', ') }}
-                                    </small>
-                                </label>
-                            </div>
-                        @endforeach
-                        <button class="btn btn-primary btn-block">Actualizar Roles</button>
-                    </form>
+                    @role('Admin')
+                        <form action="{{ route('admin.users.roles.update', $user) }}" method="POST">
+                            @csrf @method('PUT')
+                            @include('admin.roles.checkboxes')
+                            <button class="btn btn-primary btn-block">Actualizar Roles</button>
+                        </form>
+                    @else
+                        <ul class="list-group">
+                            @forelse($user->roles as $role)
+                                <li class="list-group-item">{{ $role->name }}</li>
+                            @empty
+                                <li class="list-group-item">No tiene Roles.</li>
+                            @endforelse
+                        </ul>
+                    @endrole
                 </div>
             </div>
             <div class="card card-primary card-outline">
@@ -75,19 +68,22 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.users.permissions.update', $user) }}" method="POST">
-                        @csrf @method('PUT')
-                        @foreach($permissions as $id => $name)
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" class="mr-2" name="permissions[]" value="{{ $id }}" {{ $user->permissions->contains($id) ? 'checked' : ''  }}>
-                                    {{ $name }}
-                                </label>
-                            </div>
-                        @endforeach
-                        <button class="btn btn-primary btn-block">Actualizar Permisos</button>
+                    @role('Admin')
+                        <form action="{{ route('admin.users.permissions.update', $user) }}" method="POST">
+                            @csrf @method('PUT')
+                            @include('admin.permissions.checkboxes', ['model' => $user])
+                            <button class="btn btn-primary btn-block">Actualizar Permisos</button>
 
-                    </form>
+                        </form>
+                    @else
+                        <ul class="list-group">
+                            @forelse($user->permissions as $permission)
+                                <li class="list-group-item">{{ $permission->name }}</li>
+                            @empty
+                                <li class="list-group-item">No tiene Permisos.</li>
+                            @endforelse
+                        </ul>
+                    @endrole
                 </div>
             </div>
         </div>

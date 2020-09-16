@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\UserWasCreated;
 use App\Http\Requests\UpdateUserRequest;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -18,19 +20,25 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-
+//        $users = User::all();
+        $users = User::allowed()->get();
         return view('admin.users.index', compact('users'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
     public function create()
     {
-        return view('admin.users.create');
+        $user = new User;
+        $this->authorize('create', $user);
+        $roles = Role::with('permissions')->get();
+        $permissions = Permission::all()->pluck('name', 'id');
+//        dd($roles);
+        return view('admin.users.create', compact('user', 'roles', 'permissions'));
+//        return view('admin.users.create');
     }
 
     /**
@@ -41,7 +49,34 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', new User);
+        // Validar el formulario
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:users',
+        ]);
+
+        // Generar una contraseña
+        $data['password'] = Str::random(8);
+
+        // Creamos el usuario
+        $user = User::create($data);
+        // Asignamos los roles
+        if($request->filled('roles')) {
+            $user->assignRole($request->roles);
+        }
+        // Asignamos los permisos
+        if($request->filled('permissions')) {
+            $user->givePermissionTo($request->permissions);
+        }
+
+        // Enviamos el email
+        UserWasCreated::dispatch($user, $data['password']);
+
+
+        // Regresamos al usuario
+        return redirect()->route('admin.users.index')->withFlash('El usuario ha sido creado.');
+
     }
 
     /**
@@ -52,6 +87,7 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
+        $this->authorize('view', $user);
         return view('admin.users.show', compact('user'));
     }
 
@@ -63,6 +99,7 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
 //        $roles = Role::all()->pluck('name', 'id');
         $roles = Role::with('permissions')->get();
         $permissions = Permission::all()->pluck('name', 'id');
@@ -79,8 +116,9 @@ class UsersController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
         $user->update($request->validated());
-        return back()->withFlash('Usuario actualizado.');
+        return redirect()->route('admin.users.edit', $user)->withFlash('Usuario actualizado.');
     }
 
     /**
@@ -89,8 +127,11 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $this->authorize('delete', $user);
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->withFlash('Usuario eliminado.');
     }
 }

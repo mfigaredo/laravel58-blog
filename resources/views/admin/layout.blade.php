@@ -173,12 +173,16 @@
                     </div>
                     @if(auth()->user()->roles->count())
                     <div class="badge badge-secondary">
-                        {{ auth()->user()->roles->first()->name }}
+                        {{ auth()->user()->roles->first()->display_name }}
                     </div>
+
                     @endif
                 </div>
-            </div>
 
+            </div>
+            <div>
+                <p style="color: #fffbdb; font-size: 0.8em;">{{ auth()->user()->getRoleDisplayNames() }}</p>
+            </div>
             <!-- Sidebar Menu -->
             <nav class="mt-2">
                 @include('admin.partials.nav')
