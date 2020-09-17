@@ -4,6 +4,7 @@
     <section class="pages container">
         <div class="page page-about">
             <h1 class="text-capitalize">Página no autorizada.</h1>
+            <span style="color: red; font-weight: bold;">{{ $exception->getMessage() }}</span>
             <p class="text-center" style="color:red !important;">
 
                 <i class="fa fa-exclamation-circle fa-5x"></i>

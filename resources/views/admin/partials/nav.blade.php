@@ -19,6 +19,7 @@
                 <i class="right fas fa-angle-left"></i>
             </p>
         </a>
+
         <ul class="nav nav-treeview">
             <li class="nav-item">
                 <a href="{{ route('admin.posts.index') }}" class="nav-link {{ setActiveRoute('admin.posts.index') }}">
@@ -26,22 +27,27 @@
                     <p>Ver todos los posts</p>
                 </a>
             </li>
-            <li class="nav-item">
-                @if(request()->is('admin/posts/*'))
-                    <a href="{{ route('admin.posts.index', '#create') }}" class="nav-link">
-                        <i class="far fa-edit nav-icon"></i>
-                        <p>Crear post</p>
-                    </a>
-                @else
-                    <a href="#" class="nav-link"  data-toggle="modal" data-target="#newPostModal">
-                        <i class="far fa-edit nav-icon"></i>
-                        <p>Crear post</p>
-                    </a>
-                @endif
-            </li>
+
+            @can('create', new App\Post)
+                <li class="nav-item">
+                    @if(request()->is('admin/posts/*'))
+                        <a href="{{ route('admin.posts.index', '#create') }}" class="nav-link">
+                            <i class="far fa-edit nav-icon"></i>
+                            <p>Crear post</p>
+                        </a>
+                    @else
+                        <a href="#" class="nav-link"  data-toggle="modal" data-target="#newPostModal">
+                            <i class="far fa-edit nav-icon"></i>
+                            <p>Crear post</p>
+                        </a>
+                    @endif
+                </li>
+            @endcan
         </ul>
+
     </li>
 {{--    request()->is('admin/users*') ? 'menu-open' : ''--}}
+    @can('view', new App\User)
     <li class="nav-item has-treeview {{ setActiveRoute(['admin.users.index','admin.users.create'], 'menu-open') }}">
         <a href="#" class="nav-link {{ setActiveRoute('admin/users*') }}">
             <i class="nav-icon fas fa-users"></i>
@@ -51,22 +57,52 @@
             </p>
         </a>
         <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="{{ route('admin.users.index') }}" class="nav-link {{ setActiveRoute('admin.users.index') }}">
-                    <i class="fas fa-eye nav-icon"></i>
-                    <p>Ver todos los usuarios</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.users.create') }}" class="nav-link {{ setActiveRoute('admin.users.create') }}">
-                    <i class="far fa-edit nav-icon"></i>
-                    <p>Crear un usuario</p>
-                </a>
+            @can('view', new \App\User)
+                <li class="nav-item">
+                    <a href="{{ route('admin.users.index') }}" class="nav-link {{ setActiveRoute('admin.users.index') }}">
+                        <i class="fas fa-eye nav-icon"></i>
+                        <p>Ver todos los usuarios</p>
+                    </a>
+                </li>
+            @endcan
+            @can('create', new \App\User)
+                <li class="nav-item">
+                    <a href="{{ route('admin.users.create') }}" class="nav-link {{ setActiveRoute('admin.users.create') }}">
+                        <i class="far fa-edit nav-icon"></i>
+                        <p>Crear un usuario</p>
+                    </a>
 
-            </li>
+                </li>
+            @endcan
         </ul>
     </li>
+    @else
+{{--        Editar Perfil--}}
+        <li class="nav-item">
+            <a href="{{ route('admin.users.show', auth()->user()) }}" class="nav-link {{ setActiveRoute(['admin.users.show', 'admin.users.edit'])  }}">
+                <i class="nav-icon fas fa-user"></i>
+                <p>Perfil</p>
+            </a>
+        </li>
+    @endcan
 
+    @can('view', new \Spatie\Permission\Models\Role)
+    <li class="nav-item">
+        <a href="{{ route('admin.roles.index') }}" class="nav-link {{ setActiveRoute(['admin.roles.index', 'admin.roles.edit'])  }}">
+            <i class="nav-icon fas fa-lock"></i>
+            <p>Roles</p>
+        </a>
+    </li>
+    @endcan
+
+    @can('view', new \Spatie\Permission\Models\Permission)
+    <li class="nav-item">
+        <a href="{{ route('admin.permissions.index') }}" class="nav-link {{ setActiveRoute(['admin.permissions.index', 'admin.permissions.edit'])  }}">
+            <i class="nav-icon fas fa-lock-open"></i>
+            <p>Permisos</p>
+        </a>
+    </li>
+    @endcan
 
     <li class="nav-item">
         <a href="#" class="nav-link">

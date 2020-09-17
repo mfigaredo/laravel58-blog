@@ -13,6 +13,11 @@
 
 use Illuminate\Support\Facades\Route;
 
+//DB::listen(function($query) {
+//   var_dump($query->sql);
+//   echo '<br>';
+//});
+
 Route::get('laravel', function() {
     return view('welcome');
 });
@@ -53,7 +58,8 @@ Route::group([
 
     Route::resource('posts', 'PostsController', ['except' => 'show', 'as' => 'admin']);
     Route::resource('users', 'UsersController', ['as' => 'admin']);
-    Route::resource('roles', 'RolesController', ['as' => 'admin']);
+    Route::resource('roles', 'RolesController', ['except' => 'show', 'as' => 'admin']);
+    Route::resource('permissions', 'PermissionsController', ['only' => ['index', 'edit', 'update'], 'as' => 'admin']);
 
 //    Route::get('posts', 'PostsController@index')->name('admin.posts.index');
 //    Route::get('posts/create', 'PostsController@create')->name('admin.posts.create');

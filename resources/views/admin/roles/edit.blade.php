@@ -22,5 +22,11 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-12">
+
+            <a href="{{ route('admin.roles.index') }}" class="btn btn-default"><i class="fa fa-arrow-left"></i>  Lista Roles</a>
+        </div>
+    </div>
 @endsection
 

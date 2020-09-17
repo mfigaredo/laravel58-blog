@@ -3,17 +3,19 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class SaveRolesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
-     * @return bool
+     * @return mixed
      */
     public function authorize()
     {
         return true;
+//        return Gate::authorize('update', $this->route('role'));
     }
 
     /**

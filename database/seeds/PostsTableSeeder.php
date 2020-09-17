@@ -30,6 +30,9 @@ class PostsTableSeeder extends Seeder
         $tag3 = new Tag;
         $tag3->name = 'Etiqueta3';
         $tag3->save();
+        $tag4 = new Tag;
+        $tag4->name = 'Etiqueta4';
+        $tag4->save();
 
         $category = new Category;
         $category->name = 'Categoría UNO';
@@ -122,6 +125,16 @@ class PostsTableSeeder extends Seeder
 
         $post->tags()->attach($tag2);
 
+        $post = Post::create([
+            'title' => 'Mi Quinto Post',
+            'excerpt' => 'Extracto del quinto post',
+            'body' => '<p>Contenido del quinto post</p>',
+            'published_at' => Carbon::now()->subDays(0),
+            'user_id' => 2,
+            'category_id' => 2,
+        ]);
+
+        $post->tags()->attach($tag4);
 
 
     }

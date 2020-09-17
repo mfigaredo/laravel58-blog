@@ -15,6 +15,8 @@ class Post extends Model
         'title', 'body', 'iframe', 'excerpt', 'published_at', 'category_id', 'user_id',
     ];
 
+//    protected $with = ['category', 'tags', 'owner', 'photos'];
+
     public function getRouteKeyName()
     {
         return 'url';
@@ -68,7 +70,8 @@ class Post extends Model
 
     public function scopePublished($query)
     {
-        $query->whereNotNull('published_at')
+        $query->with(['category', 'tags', 'owner', 'photos'])
+            ->whereNotNull('published_at')
             ->where('published_at', '<=' , Carbon::now())
             ->latest('published_at');
     }
@@ -164,5 +167,15 @@ class Post extends Model
             return 'posts.iframe';
         }
         return 'posts.text';
+    }
+
+    public function scopeByYearAndMonth($query)
+    {
+        return $query->selectRaw('year(published_at) as year')
+            ->selectRaw('month(published_at) as month')
+            ->selectRaw('monthname(published_at) as monthname')
+            ->selectRaw('count(*) as posts')
+            ->groupBy('year', 'month', 'monthname')
+            ->orderBy('published_at', 'DESC');
     }
 }
