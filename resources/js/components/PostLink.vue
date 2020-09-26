@@ -1,19 +1,20 @@
 <template>
     <router-link
         :to="{
-            name: 'category_posts',
+            name: 'posts_show',
             params: {
-                category: category.url
+                url: post.url
             }
-        }">
-        {{ category.name || '' }}
+        }"
+        class="">
+        <slot/>
     </router-link>
 </template>
 
 <script>
 export default {
-    name: "CategoryLink",
-    props: ['category'],
+    name: "Postlink",
+    props: ['post'],
 }
 </script>
 

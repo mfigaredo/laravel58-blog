@@ -1,13 +1,16 @@
 <template>
-$END$
+    <paginator 
+        url="/api/posts"
+        component-name="posts-list"
+    ></paginator>
 </template>
 
 <script>
 export default {
-name: "Home"
+    name: "Home",
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 
 </style>

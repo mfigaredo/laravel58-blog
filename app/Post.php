@@ -15,6 +15,7 @@ class Post extends Model
         'title', 'body', 'iframe', 'excerpt', 'published_at', 'category_id', 'user_id',
     ];
 
+    protected $appends = ['published_date'];
 //    protected $with = ['category', 'tags', 'owner', 'photos'];
 
     public function getRouteKeyName()
@@ -177,5 +178,10 @@ class Post extends Model
             ->selectRaw('count(*) as posts')
             ->groupBy('year', 'month', 'monthname')
             ->orderBy('published_at', 'DESC');
+    }
+
+    public function getPublishedDateAttribute()
+    {
+        return optional($this->published_at)->format('M d');
     }
 }

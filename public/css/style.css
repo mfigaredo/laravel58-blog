@@ -230,12 +230,16 @@ a.btn-bar{
 	resize: vertical;
 	padding: 25px 0 0 15px;
 }
-.page-contact .form-contact .send-message a{
+.page-contact .form-contact .send-message button {
 	display: block;
-	text-decoration: none;
-    font-weight: bold;
-    margin-top: 25px;
-    font-size: 19px;
+	/* text-decoration: none; */
+	font-weight: bold;
+	margin-top: 25px;
+	font-size: 19px;
+	border: none;
+	cursor: pointer;
+	padding: 15px 18px;
+	outline: none;
 }
 
 .custom-wrapper {
@@ -320,4 +324,26 @@ nav#menu a:hover {
 
 .w-100 {
     width: 100%;
+}
+
+.fade-enter-active, .fade-leave-active {
+	transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+	opacity: 0;
+}
+
+.slide-fade-enter-active {
+	transition: all .3s ease;
+}
+.slide-fade-leave-active {
+	transition: all .3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+.slide-fade-enter, .slide-fade-leave-to {
+	transform: translateY(800px);
+	opacity: 0;
+}
+
+.page-wrapper {
+	min-height: 100vh;
 }

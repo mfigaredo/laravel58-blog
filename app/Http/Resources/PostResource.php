@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\Resource;
 
-class PostResource extends ResourceCollection
+class PostResource extends Resource
 {
     /**
      * Transform the resource collection into an array.
@@ -15,9 +15,11 @@ class PostResource extends ResourceCollection
     public function toArray($request)
     {
 //        return parent::toArray($request);
+
         return [
-          'titulo' => $this->resource->title,
-          'cuerpo' => $this->resource->body,
+            'titulo' => $this->resource->title,
+            'cuerpo' => $this->resource->body,
+            'owner' => $this->resource->owner,
         ];
     }
 }
